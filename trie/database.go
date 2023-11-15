@@ -18,6 +18,7 @@ package trie
 
 import (
 	"errors"
+	mylog "log"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethdb"
@@ -135,6 +136,7 @@ func (db *Database) Reader(blockRoot common.Hash) (Reader, error) {
 func (db *Database) Update(root common.Hash, parent common.Hash, block uint64, nodes *trienode.MergedNodeSet, states *triestate.Set) error {
 	if db.preimages != nil {
 		db.preimages.commit(false)
+		mylog.Println("db.preimages.commit database.Update in trie!")
 	}
 	return db.backend.Update(root, parent, block, nodes, states)
 }

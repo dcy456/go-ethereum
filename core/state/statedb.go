@@ -19,6 +19,7 @@ package state
 
 import (
 	"fmt"
+	mylog "log"
 	"math/big"
 	"sort"
 	"time"
@@ -142,6 +143,7 @@ type StateDB struct {
 
 // New creates a new state from a given trie.
 func New(root common.Hash, db Database, snaps *snapshot.Tree) (*StateDB, error) {
+	mylog.Println("New in State start!!!")
 	tr, err := db.OpenTrie(root)
 	if err != nil {
 		return nil, err
@@ -411,6 +413,7 @@ func (s *StateDB) SetCode(addr common.Address, code []byte) {
 
 func (s *StateDB) SetState(addr common.Address, key, value common.Hash) {
 	stateObject := s.GetOrNewStateObject(addr)
+	mylog.Println("StateDB.SetState start! and the stateObject is:", stateObject)
 	if stateObject != nil {
 		stateObject.SetState(key, value)
 	}
@@ -562,8 +565,10 @@ func (s *StateDB) getDeletedStateObject(addr common.Address) *stateObject {
 	if obj := s.stateObjects[addr]; obj != nil {
 		return obj
 	}
+	var k = 0
 	// If no live objects are available, attempt to use snapshots
 	var data *types.StateAccount
+
 	if s.snap != nil {
 		start := time.Now()
 		acc, err := s.snap.Account(crypto.HashData(s.hasher, addr.Bytes()))
@@ -587,9 +592,12 @@ func (s *StateDB) getDeletedStateObject(addr common.Address) *stateObject {
 				data.Root = types.EmptyRootHash
 			}
 		}
+		mylog.Println("The stateobject load from the snapshots!!!")
+		k += 1
 	}
 	// If snapshot unavailable or reading from it failed, load from the database
 	if data == nil {
+
 		start := time.Now()
 		var err error
 		data, err = s.trie.GetAccount(addr)
@@ -603,9 +611,18 @@ func (s *StateDB) getDeletedStateObject(addr common.Address) *stateObject {
 		if data == nil {
 			return nil
 		}
+		k += 1
 	}
 	// Insert into the live set
 	obj := newObject(s, addr, data)
+
+	if k == 1 {
+		mylog.Println("The stateobject load from the snapshot!!! obj:", obj)
+	}
+	if k == 2 {
+		mylog.Println("The stateobject load from the database!!! obj:", obj)
+	}
+
 	s.setStateObject(obj)
 	return obj
 }
@@ -619,6 +636,7 @@ func (s *StateDB) GetOrNewStateObject(addr common.Address) *stateObject {
 	stateObject := s.getStateObject(addr)
 	if stateObject == nil {
 		stateObject, _ = s.createObject(addr)
+		mylog.Println("StateDB.createObject() in GetOrNewStateObject done!")
 	}
 	return stateObject
 }
@@ -1195,6 +1213,7 @@ func (s *StateDB) Commit(block uint64, deleteEmptyObjects bool) (common.Hash, er
 		// Write any contract code associated with the state object
 		if obj.code != nil && obj.dirtyCode {
 			rawdb.WriteCode(codeWriter, common.BytesToHash(obj.CodeHash()), obj.code)
+			mylog.Println("write code in statedb.Commit done!")
 			obj.dirtyCode = false
 		}
 		// Write any storage changes in the state object to its storage trie

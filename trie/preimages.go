@@ -17,6 +17,7 @@
 package trie
 
 import (
+	"log"
 	"sync"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -79,6 +80,7 @@ func (store *preimageStore) commit(force bool) error {
 	}
 	batch := store.disk.NewBatch()
 	rawdb.WritePreimages(batch, store.preimages)
+	log.Println("preimageStore.commit done!")
 	if err := batch.Write(); err != nil {
 		return err
 	}
