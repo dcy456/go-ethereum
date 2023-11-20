@@ -617,10 +617,10 @@ func (s *StateDB) getDeletedStateObject(addr common.Address) *stateObject {
 	obj := newObject(s, addr, data)
 
 	if k == 1 {
-		mylog.Println("The stateobject load from the snapshot!!! obj:", obj)
+		mylog.Println("The stateobject load from the snapshot!!! obj.addr:", obj.address)
 	}
 	if k == 2 {
-		mylog.Println("The stateobject load from the database!!! obj:", obj)
+		mylog.Println("The stateobject load from the database!!! obj.addr:", obj.address)
 	}
 
 	s.setStateObject(obj)
@@ -636,7 +636,7 @@ func (s *StateDB) GetOrNewStateObject(addr common.Address) *stateObject {
 	stateObject := s.getStateObject(addr)
 	if stateObject == nil {
 		stateObject, _ = s.createObject(addr)
-		mylog.Println("StateDB.createObject() in GetOrNewStateObject done!")
+		mylog.Println("StateDB.createObject() in GetOrNewStateObject done! obj.addr:", stateObject.address)
 	}
 	return stateObject
 }

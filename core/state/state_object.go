@@ -20,7 +20,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	mylog "log"
 	"math/big"
 	"time"
@@ -230,7 +229,7 @@ func (s *stateObject) GetCommittedState(key common.Hash) common.Hash {
 
 // SetState updates a value in account storage.
 func (s *stateObject) SetState(key, value common.Hash) {
-	mylog.Println("stateObject.SetState start! and the stateObject is: ", s)
+	mylog.Println("stateObject.SetState start! obj.addr:", s.address)
 	// If the new value is the same as old, don't set
 	prev := s.GetState(key)
 	if prev == value {
@@ -247,6 +246,7 @@ func (s *stateObject) SetState(key, value common.Hash) {
 
 func (s *stateObject) setState(key, value common.Hash) {
 	s.dirtyStorage[key] = value
+	mylog.Println("Modify the dirtystorage! obj.addr:", s.address)
 }
 
 // finalise moves all dirty storage slots into the pending area to be hashed or
@@ -380,7 +380,7 @@ func (s *stateObject) updateRoot() {
 // storage mutations have already been flushed into trie by updateRoot.
 func (s *stateObject) commit() (*trienode.NodeSet, error) {
 	// Short circuit if trie is not even loaded, don't bother with committing anything
-	log.Println("Start stateObject.commit!")
+	mylog.Println("Start stateObject.commit! obj.addr:", s.address)
 	if s.trie == nil {
 		s.origin = s.data.Copy()
 		return nil, nil
