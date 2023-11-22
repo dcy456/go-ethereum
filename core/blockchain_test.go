@@ -1547,7 +1547,7 @@ func testCanonicalBlockRetrieval(t *testing.T, scheme string) {
 					t.Errorf("unknown canonical hash, want %s, got %s", block.Hash().Hex(), ch.Hex())
 					return
 				}
-				fb := rawdb.ReadBlock(blockchain.db, ch, block.NumberU64())
+				fb := rawdb.(blockchain.db, ch, block.NumberU64())
 				if fb == nil {
 					t.Errorf("unable to retrieve block %d for canonical hash: %s", block.NumberU64(), ch.Hex())
 					return

@@ -413,7 +413,7 @@ func (s *StateDB) SetCode(addr common.Address, code []byte) {
 
 func (s *StateDB) SetState(addr common.Address, key, value common.Hash) {
 	stateObject := s.GetOrNewStateObject(addr)
-	mylog.Println("StateDB.SetState start! and the stateObject is:", stateObject)
+	mylog.Println("StateDB.SetState start! and the stateObject is:", stateObject.address)
 	if stateObject != nil {
 		stateObject.SetState(key, value)
 	}
