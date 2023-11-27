@@ -17,8 +17,6 @@
 package vm
 
 import (
-	mylog "log"
-
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -515,24 +513,24 @@ func opMstore8(pc *uint64, interpreter *EVMInterpreter, scope *ScopeContext) ([]
 }
 
 func opSload(pc *uint64, interpreter *EVMInterpreter, scope *ScopeContext) ([]byte, error) {
-	mylog.Print("Start opSload!")
+	// mylog.Print("Start opSload!")
 	loc := scope.Stack.peek()
 	hash := common.Hash(loc.Bytes32())
 	val := interpreter.evm.StateDB.GetState(scope.Contract.Address(), hash)
-	mylog.Print("interpreter.evm.StateDB.GetState in opSload done!")
+	// mylog.Print("interpreter.evm.StateDB.GetState in opSload done!")
 	loc.SetBytes(val.Bytes())
 	return nil, nil
 }
 
 func opSstore(pc *uint64, interpreter *EVMInterpreter, scope *ScopeContext) ([]byte, error) {
-	mylog.Print("Start opSstore!")
+	// mylog.Print("Start opSstore!")
 	if interpreter.readOnly {
 		return nil, ErrWriteProtection
 	}
 	loc := scope.Stack.pop()
 	val := scope.Stack.pop()
 	interpreter.evm.StateDB.SetState(scope.Contract.Address(), loc.Bytes32(), val.Bytes32())
-	mylog.Print("interpreter.evm.StateDB.SetState in opSload done!")
+	// mylog.Print("interpreter.evm.StateDB.SetState in opSload done!")
 	return nil, nil
 }
 

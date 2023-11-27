@@ -143,7 +143,7 @@ type StateDB struct {
 
 // New creates a new state from a given trie.
 func New(root common.Hash, db Database, snaps *snapshot.Tree) (*StateDB, error) {
-	mylog.Println("New in State start!!!")
+	mylog.Println("New in State start!!!", root)
 	tr, err := db.OpenTrie(root)
 	if err != nil {
 		return nil, err
@@ -413,7 +413,7 @@ func (s *StateDB) SetCode(addr common.Address, code []byte) {
 
 func (s *StateDB) SetState(addr common.Address, key, value common.Hash) {
 	stateObject := s.GetOrNewStateObject(addr)
-	mylog.Println("StateDB.SetState start! and the stateObject is:", stateObject.address)
+	// mylog.Println("StateDB.SetState start! and the stateObject is:", stateObject.address)
 	if stateObject != nil {
 		stateObject.SetState(key, value)
 	}
@@ -592,7 +592,7 @@ func (s *StateDB) getDeletedStateObject(addr common.Address) *stateObject {
 				data.Root = types.EmptyRootHash
 			}
 		}
-		mylog.Println("The stateobject load from the snapshots!!!")
+		// mylog.Println("The stateobject load from the snapshots!!!")
 		k += 1
 	}
 	// If snapshot unavailable or reading from it failed, load from the database
@@ -617,10 +617,10 @@ func (s *StateDB) getDeletedStateObject(addr common.Address) *stateObject {
 	obj := newObject(s, addr, data)
 
 	if k == 1 {
-		mylog.Println("The stateobject load from the snapshot!!! obj.addr:", obj.address)
+		// mylog.Println("The stateobject load from the snapshot!!! obj.addr:", obj.address)
 	}
 	if k == 2 {
-		mylog.Println("The stateobject load from the database!!! obj.addr:", obj.address)
+		// mylog.Println("The stateobject load from the database!!! obj.addr:", obj.address)
 	}
 
 	s.setStateObject(obj)
@@ -636,7 +636,7 @@ func (s *StateDB) GetOrNewStateObject(addr common.Address) *stateObject {
 	stateObject := s.getStateObject(addr)
 	if stateObject == nil {
 		stateObject, _ = s.createObject(addr)
-		mylog.Println("StateDB.createObject() in GetOrNewStateObject done! obj.addr:", stateObject.address)
+		// mylog.Println("StateDB.createObject() in GetOrNewStateObject done! obj.addr:", stateObject.address)
 	}
 	return stateObject
 }
@@ -1213,7 +1213,7 @@ func (s *StateDB) Commit(block uint64, deleteEmptyObjects bool) (common.Hash, er
 		// Write any contract code associated with the state object
 		if obj.code != nil && obj.dirtyCode {
 			rawdb.WriteCode(codeWriter, common.BytesToHash(obj.CodeHash()), obj.code)
-			mylog.Println("write code in statedb.Commit done!")
+			// mylog.Println("write code in statedb.Commit done!")
 			obj.dirtyCode = false
 		}
 		// Write any storage changes in the state object to its storage trie
